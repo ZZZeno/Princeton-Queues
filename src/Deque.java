@@ -102,9 +102,9 @@ public class Deque<Item> implements Iterable<Item> {
             return head.item;
         } else {
 //            Item ret = this.head.next.item;
-            Node newHead = this.head.next.next;
+            Node newHead = head.next;
             newHead.before = null;
-            this.head.next.next = null;
+            head.next = null;
             this.head.next = newHead;
             this.size -= 1;
             return head.item;
@@ -123,8 +123,8 @@ public class Deque<Item> implements Iterable<Item> {
             return tail.item;
         } else {
 //            Item ret = this.tail.next.item;
-            Node newTail = this.tail.next.before;
-            this.tail.next.before = null;
+            Node newTail = tail.before;
+            tail.before = null;
             newTail.next = null;
             this.tail.next = newTail;
             this.size -= 1;
