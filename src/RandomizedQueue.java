@@ -18,16 +18,26 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     }
 
     public void enqueue(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
         items[size] = item;
         allocateSpace();
     }
 
     public Item dequeue() {
+        if (this.size() == 0) {
+            throw new NoSuchElementException();
+        }
         int index = StdRandom.uniform(size)+1;
+        this.size -= 1;
         return items[index];
     }
 
     public Item sample() {
+        if (this.size() == 0) {
+            throw new NoSuchElementException();
+        }
         return items[StdRandom.uniform(size)+1];
     }
 
