@@ -3,10 +3,8 @@ import java.util.NoSuchElementException;
 
 import edu.princeton.cs.algs4.StdRandom;
 
-public class RandomizedQueue <Item> implements Iterable<Item>  {
-    public Iterator<Item> iterator() {
-        return new DequeIterator();
-    }
+public class RandomizedQueue<Item> implements Iterable<Item> {
+
     private int size = 0;
     private int currentCapacity;
     private static final int INITIAL_CAPACITY = 16;
@@ -16,6 +14,10 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     public RandomizedQueue() {
         items = (Item[]) new Object[INITIAL_CAPACITY];
         currentCapacity = INITIAL_CAPACITY;
+    }
+
+    public Iterator<Item> iterator() {
+        return new DequeIterator();
     }
 
     public void enqueue(Item item) {
@@ -43,12 +45,12 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
         if (this.size() == 0) {
             throw new NoSuchElementException();
         }
-        return items[StdRandom.uniform(size)+1];
+        return items[StdRandom.uniform(size) + 1];
     }
 
     private void allocateSpace() {
         if (this.size() > 8) {
-            if (this.size() >= this.capacity()/2) {
+            if (this.size() >= this.capacity() / 2) {
                 int newSize = this.capacity() * 2;
                 Item[] newQueue = (Item[]) new Object[newSize];
                 if (this.size() >= 0) System.arraycopy(this.items, 0, newQueue, 0, this.size());
@@ -59,10 +61,10 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     }
 
     private void recycleSpace(int recycledIndex) {
-        if (this.size() < this.capacity()/4 && this.capacity() > 16) {
+        if (this.size() < this.capacity() / 4 && this.capacity() > 16) {
             int newSize = this.capacity() / 2;
             Item[] newQueue = (Item[]) new Object[newSize];
-            for (int i = 0; i < this.size()+1; i ++) {
+            for (int i = 0; i < this.size() + 1; i++) {
                 if (this.items[i] != null) {
                     newQueue[i] = this.items[i];
                 }
@@ -70,8 +72,8 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
             this.items = newQueue;
             this.currentCapacity = newSize;
         } else {
-            for (int i = recycledIndex; i < this.size(); i ++) {
-                this.items[i] = this.items[i+1];
+            for (int i = recycledIndex; i < this.size(); i++) {
+                this.items[i] = this.items[i + 1];
             }
         }
 
@@ -85,14 +87,14 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
         return this.size;
     }
 
-    public int capacity() {
+    private int capacity() {
         return this.currentCapacity;
     }
 
 
     private class DequeIterator implements Iterator<Item> {
-        private Item[] randomItems = (Item[]) new Object[size()] ;
-        int cursor = 0;
+        private final Item[] randomItems = (Item[]) new Object[size()];
+        private int cursor = 0;
 
         public DequeIterator() {
             if (size() >= 0) System.arraycopy(items, 0, randomItems, 0, size());
@@ -135,10 +137,6 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
         queue.enqueue(4);
         queue.enqueue(4);
         queue.enqueue(4);
-        System.out.println(queue.dequeue());
-        System.out.println(queue.size());
-        System.out.println(queue.capacity());
-        System.out.println(queue.dequeue());
         for (Integer temp : queue) {
             System.out.println(temp);
         }
