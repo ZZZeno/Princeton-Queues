@@ -1,20 +1,21 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 import edu.princeton.cs.algs4.StdRandom;
 
 public class RandomizedQueue <Item> implements Iterable<Item>  {
     public Iterator<Item> iterator() {
         return new DequeIterator();
     }
-    private final Node head = new Node(null);
-    private final Node tail = new Node(null);
     private int size = 0;
-    private static final int INITIAL_CAPACITY = 8;
+    private int currentCapacity;
+    private static final int INITIAL_CAPACITY = 16;
     private Item[] items;
 
 
     public RandomizedQueue() {
         items = (Item[]) new Object[INITIAL_CAPACITY];
+        currentCapacity = INITIAL_CAPACITY;
     }
 
     public void enqueue(Item item) {
@@ -22,16 +23,20 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
             throw new IllegalArgumentException();
         }
         items[size] = item;
-        allocateSpace();
+        this.size += 1;
+//        this.allocateSpace();
     }
 
     public Item dequeue() {
         if (this.size() == 0) {
             throw new NoSuchElementException();
         }
-        int index = StdRandom.uniform(size)+1;
+        int index = StdRandom.uniform(size);
+        Item ret = items[index];
         this.size -= 1;
-        return items[index];
+        this.items[index] = null;
+        this.recycleSpace(index);
+        return ret;
     }
 
     public Item sample() {
@@ -42,11 +47,35 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     }
 
     private void allocateSpace() {
-
+        if (this.capacity() > 16) {
+            if (this.size() >= this.capacity()/2) {
+                int newSize = this.capacity() * 2;
+                Item[] newQueue = (Item[]) new Object[newSize];
+                if (this.size() >= 0) System.arraycopy(this.items, 0, newQueue, 0, this.size());
+                this.items = newQueue;
+                this.currentCapacity = newSize;
+            }
+        }
     }
 
-    private void recycleSpace() {
-
+    private void recycleSpace(int recycledIndex) {
+        if (this.capacity() > 16) {
+            if (this.size() < this.capacity()/4) {
+                int newSize = this.capacity() / 2;
+                Item[] newQueue = (Item[]) new Object[newSize];
+                for (int i = 0; i < this.size()+1; i ++) {
+                    if (this.items[i] != null) {
+                        newQueue[i] = this.items[i];
+                    }
+                }
+                this.items = newQueue;
+                this.currentCapacity = newSize;
+            }
+        } else {
+            if (this.size() - recycledIndex >= 0)
+                System.arraycopy(this.items, recycledIndex + 1, this.items, recycledIndex, this.size() - recycledIndex);
+            this.items[this.size()] = null;
+        }
     }
 
     public boolean isEmpty() {
@@ -54,31 +83,25 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     }
 
     public int size() {
-        return size;
+        return this.size;
     }
 
-    private class Node {
-        Item item;
-        Node next;
-        Node before;
-
-        Node(Item item) {
-            item = item;
-            next = null;
-            before = null;
-        }
+    public int capacity() {
+        return this.currentCapacity;
     }
+
 
     private class DequeIterator implements Iterator<Item> {
-//        private Node current;
+        private Item[] randomItems = (Item[]) new Object[size()] ;
+        int cursor = 0;
 
         public DequeIterator() {
-//            current = head.next;
+            if (size() >= 0) System.arraycopy(items, 0, randomItems, 0, size());
+            StdRandom.shuffle(randomItems);
         }
 
         public boolean hasNext() {
-//            return current != null;
-            return false;
+            return cursor < size;
         }
 
         public void remove() {
@@ -86,12 +109,21 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
         }
 
         public Item next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            } else {
-                Node node = new Node(null);
-                return node.item;
-            }
+            if (!hasNext()) throw new NoSuchElementException();
+            return randomItems[cursor++];
+        }
+    }
+
+    public static void main(String[] args) {
+        RandomizedQueue<Integer> queue = new RandomizedQueue<Integer>();
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+        queue.enqueue(4);
+        System.out.println(queue.dequeue());
+        System.out.println(queue.dequeue());
+        for (Integer temp : queue) {
+            System.out.println(temp);
         }
     }
 }
