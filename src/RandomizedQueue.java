@@ -24,7 +24,7 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
         }
         items[size] = item;
         this.size += 1;
-//        this.allocateSpace();
+        this.allocateSpace();
     }
 
     public Item dequeue() {
@@ -47,7 +47,7 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     }
 
     private void allocateSpace() {
-        if (this.capacity() > 16) {
+        if (this.size() > 8) {
             if (this.size() >= this.capacity()/2) {
                 int newSize = this.capacity() * 2;
                 Item[] newQueue = (Item[]) new Object[newSize];
@@ -59,23 +59,22 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
     }
 
     private void recycleSpace(int recycledIndex) {
-        if (this.capacity() > 16) {
-            if (this.size() < this.capacity()/4) {
-                int newSize = this.capacity() / 2;
-                Item[] newQueue = (Item[]) new Object[newSize];
-                for (int i = 0; i < this.size()+1; i ++) {
-                    if (this.items[i] != null) {
-                        newQueue[i] = this.items[i];
-                    }
+        if (this.size() < this.capacity()/4 && this.capacity() > 16) {
+            int newSize = this.capacity() / 2;
+            Item[] newQueue = (Item[]) new Object[newSize];
+            for (int i = 0; i < this.size()+1; i ++) {
+                if (this.items[i] != null) {
+                    newQueue[i] = this.items[i];
                 }
-                this.items = newQueue;
-                this.currentCapacity = newSize;
             }
+            this.items = newQueue;
+            this.currentCapacity = newSize;
         } else {
-            if (this.size() - recycledIndex >= 0)
-                System.arraycopy(this.items, recycledIndex + 1, this.items, recycledIndex, this.size() - recycledIndex);
-            this.items[this.size()] = null;
+            for (int i = recycledIndex; i < this.size(); i ++) {
+                this.items[i] = this.items[i+1];
+            }
         }
+
     }
 
     public boolean isEmpty() {
@@ -120,7 +119,25 @@ public class RandomizedQueue <Item> implements Iterable<Item>  {
         queue.enqueue(2);
         queue.enqueue(3);
         queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
+        queue.enqueue(4);
         System.out.println(queue.dequeue());
+        System.out.println(queue.size());
+        System.out.println(queue.capacity());
         System.out.println(queue.dequeue());
         for (Integer temp : queue) {
             System.out.println(temp);
